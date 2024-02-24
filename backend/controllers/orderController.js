@@ -8,10 +8,6 @@ const createNewOrder = (req, res) => {
 
   const data = [order_price, user_id, eventDate,event_name, place, status];
 
-  const { order_price, event_name,eventDate,place, status } = req.body;
-  const user_id = req.token.userId;
-
-  const data = [order_price, user_id,event_name, eventDate, place, status];
 
 
   pool

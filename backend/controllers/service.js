@@ -184,7 +184,7 @@ const deleteServiceById = (req, res) => {
 
 
   const { id } = req.params;
->
+
   const userId = req.token.userId;
   console.log(id);
   pool
