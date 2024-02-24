@@ -77,7 +77,8 @@ const [package_id, setPackageId] = useState(null)
     }
   };
 
-  const handlePackagePrice = () => {
+  const handlePackagePrice = (e) => {
+    e.preventDefault();
     const totalOrderPrice = checkedServices.reduce((total, serviceId) => {
       const selectedService = services.find(
         (service) => service.service_id === serviceId
@@ -93,6 +94,7 @@ const [package_id, setPackageId] = useState(null)
   //.........................................................................................
 
   const handleCheckboxChange = (serviceId) => {
+    
     //reduce HOF to calculate the total order price as summation of checked services
 
     console.log("checkedServices", checkedServices, "serviceId", serviceId);
@@ -198,7 +200,7 @@ const AddServiceToPackage=async (package_id,service_id)=>{
       create  <a>package</a> 
     </h1>
     
-    <form onSubmit={handleSubmitPackage}  >
+    <form   >
     <MDBRow className="formInput">
         <MDBInput
           label="Package Name"
@@ -281,7 +283,7 @@ const AddServiceToPackage=async (package_id,service_id)=>{
         <></>
       )}
 
-      <MDBBtn type="submit"   className="totalPriceButton">Submit your Package</MDBBtn>
+      <MDBBtn type="submit"   className="totalPriceButton" onClick={handleSubmitPackage}>Submit your Package</MDBBtn>
     </form>
     
     <MDBBtn onClick={() => {setModalShow(true)
