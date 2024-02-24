@@ -33,7 +33,7 @@ CREATE TABLE users (
 CREATE TABLE events (
     event_id SERIAL NOT NULL,
     event VARCHAR (255),
-    image VARCHAR (255),
+    image TEXT,
     is_deleted SMALLINT DEFAULT 0,
     PRIMARY KEY (event_id)
 );
@@ -41,9 +41,9 @@ CREATE TABLE events (
 CREATE TABLE services (
     service_id SERIAL NOT NULL,
     service_name VARCHAR (255),
-    details VARCHAR (255),
+    details  TEXT,
     price INT,
-    image VARCHAR (255),
+    image TEXT,
     status VARCHAR (255) DEFAULT 'pending',
     provider INT,
     is_deleted SMALLINT DEFAULT 0,
@@ -65,8 +65,8 @@ CREATE TABLE package (
     package_id SERIAL NOT NULL,
     package_Name VARCHAR (255),
     price INT,
-    Description VARCHAR (255),
-    image VARCHAR (255),
+    Description TEXT,
+    image TEXT,
     event INT,
     is_deleted SMALLINT DEFAULT 0,
     FOREIGN KEY (event) REFERENCES events (event_id),
@@ -87,6 +87,7 @@ CREATE TABLE orders (
     order_id SERIAL NOT NULL,
     order_price INT,
     user_id INT,
+    event_name VARCHAR(255),
     eventDate VARCHAR(255),
     place VARCHAR(255),
     created_at TIMESTAMP DEFAULT NOW(),

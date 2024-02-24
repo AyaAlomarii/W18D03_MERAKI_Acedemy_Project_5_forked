@@ -2,14 +2,21 @@
 const { pool } = require("../models/db");
 
 const createNewOrder = (req, res) => {
-  const { order_price, eventDate, place, status } = req.body;
+
+  const { order_price, eventDate, event_name, place, status } = req.body;
   const user_id = req.token.userId;
 
-  const data = [order_price, user_id, eventDate, place, status];
+  const data = [order_price, user_id, eventDate,event_name, place, status];
+
+  const { order_price, event_name,eventDate,place, status } = req.body;
+  const user_id = req.token.userId;
+
+  const data = [order_price, user_id,event_name, eventDate, place, status];
+
 
   pool
     .query(
-      `INSERT INTO orders (order_price, user_id, eventDate, place,status) VALUES ($1,$2,$3,$4,$5) 
+      `INSERT INTO orders (order_price, user_id, event_name ,eventDate, place,status) VALUES ($1,$2,$3,$4,$5,$6) 
     RETURNING * `,
       data
     )
@@ -78,12 +85,26 @@ const createNewOrderServices = (req, res) => {
 
 
 const getAllOrders = (req, res) => {
-  const query = `SELECT o.order_id, o.order_price, o.eventDate, o.place,
-   os.service_id, s.service_name, s.details, s.price, s.image
-  FROM orders o
+  const query = `SELECT 
+  o.order_id, 
+  o.order_price, 
+
+  o.event_name,
+
+  o.eventDate, 
+  o.place,
+  os.service_id, 
+  s.service_name, 
+  s.details, 
+  s.price, 
+  s.image
+FROM 
+  orders o
   JOIN orders_services os ON o.order_id = os.order_id
   JOIN services s ON os.service_id = s.service_id
-  WHERE o.is_deleted = 0
+  JOIN users u ON o.user_id = u.user_id
+WHERE 
+  o.is_deleted = 0
   AND os.is_deleted = 0;`;
 
   pool
@@ -111,21 +132,47 @@ const getAllOrders = (req, res) => {
 const getOrderById = (req, res) => {
   const orderId = req.params.id;
 
-  const query = `
-    SELECT o.order_id, o.order_price, o.eventDate, o.place, 
-           u.userName,
-           os.service_id, s.service_name, s.details, s.price, s.image,
-           sp.package_id, p.package_Name, p.Description, p.price AS package_price, p.image AS package_image
-    FROM orders o
-    JOIN users u ON o.user_id = u.user_id
-    LEFT JOIN orders_services os ON o.order_id = os.order_id
-    LEFT JOIN services s ON os.service_id = s.service_id
-    LEFT JOIN service_package sp ON os.service_package_id = sp.id
-    LEFT JOIN package p ON sp.package_id = p.package_id
-    WHERE o.order_id = $1
-      AND o.is_deleted = 0
-      AND os.is_deleted = 0;
-  `;
+  const query = 
+`
+
+  SELECT 
+    o.order_id, 
+    o.order_price, 
+    o.eventDate, 
+
+
+    o.event_name,
+
+    o.place, 
+    u.userName,
+    os.service_id, 
+    s.service_name, 
+    s.details, 
+    s.price, 
+    s.image,
+    sp.package_id, 
+    p.package_Name, 
+    p.Description, 
+    p.price package_price, 
+    p.image package_image
+FROM 
+    orders o
+JOIN 
+    users u ON o.user_id = u.user_id
+LEFT JOIN 
+    orders_services os ON o.order_id = os.order_id
+LEFT JOIN 
+    services s ON os.service_id = s.service_id
+LEFT JOIN 
+    service_package sp ON os.service_package_id = sp.id
+LEFT JOIN 
+    package p ON sp.package_id = p.package_id
+WHERE 
+    o.order_id = $1
+    AND o.is_deleted = 0
+    AND os.is_deleted = 0;
+`
+  ;
   const data = [orderId];
 
   pool.query(query, data)

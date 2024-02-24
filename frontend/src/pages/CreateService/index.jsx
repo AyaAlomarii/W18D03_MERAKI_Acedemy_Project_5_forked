@@ -2,31 +2,51 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addService } from "../../services/redux/reducer/serviceProvider";
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal'; 
 
 const CreateService = () => {
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
   const [service_name, setService_name] = useState("");
   const [details, setDetails] = useState("");
   const [price, setPrice] = useState("");
-  const [Image, setImage] = useState("");
+  const [image, setImage] = useState("");
   const dispatch = useDispatch();
   const token = useSelector((state) => state.auth.token);
 
-  const createService = () => {
-    axios
-      .post(
-        "http://localhost:5000/service",
-        { service_name, details, price, Image },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const uploadImage = async (image) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", image); // Assuming only one file is selected
+      formData.append("upload_preset", "amalhawwari"); // Your Cloudinary upload preset name
+      formData.append("cloud_name", "dhgpwshhe"); // Your Cloudinary cloud name
+  
+      const response = await axios.post("https://api.cloudinary.com/v1_1/dhgpwshhe/image/upload", formData);
+      return response.data.url;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
   };
+  
+
+  const createService = async () => {
+    try {
+      const imageUrl = await uploadImage(image);
+      const result = await axios.post(
+        "http://localhost:5000/service",
+        { service_name, details, price, image: imageUrl },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log(result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
   return (
     <div className="container">
@@ -83,6 +103,7 @@ const CreateService = () => {
                 id="image"
                 onChange={(e) => setImage(e.target.files[0])}
               />
+              {/* <img src={image} alt="uploaded image" /> */}
             </div>
             <button
               type="button"
